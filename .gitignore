@@ -21,6 +21,8 @@ env/
 .env*.local
 
 # Database / Docker
+*.db
+*.sqlite3
 .data/
 pgdata/
 docker-compose.override.yml
