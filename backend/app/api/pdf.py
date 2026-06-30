@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 from typing import List
 from app.core.security import get_current_user_id
 from app.schemas.schemas import PDFChatRequest, PDFChatResponse
-from app.services.pdf_service import store_pdf_content, query_pdf
+from app.services.pdf_service import store_pdf_content, query_pdf, extract_text_from_file
 
 router = APIRouter()
 
@@ -20,39 +20,7 @@ async def upload_pdf(
     
     try:
         contents = await file.read()
-        
-        # Simple text decoder that decodes content
-        # For PDFs, we can extract ASCII/UTF-8 strings or use a simple parser.
-        # To ensure maximum compatibility and zero external compilation errors,
-        # we will extract printable characters, or parse TXT/MD normally.
-        if file.filename.endswith(('.txt', '.md')):
-            text = contents.decode("utf-8", errors="ignore")
-        else:
-            # Simple PDF ASCII extractor for RAG demonstration
-            # Decodes text chunks from the PDF format
-            text_parts = []
-            # Find elements inside parentheses (BT ... ET blocks in PDF)
-            matches = re.findall(rb'\((.*?)\)', contents)
-            for m in matches:
-                try:
-                    decoded = m.decode("utf-8", errors="ignore")
-                    if len(decoded) > 3 and not decoded.startswith("/"):
-                        text_parts.append(decoded)
-                except Exception:
-                    pass
-            
-            text = " ".join(text_parts)
-            if len(text.strip()) < 50:
-                # Fallback to readable text if PDF parsing doesn't extract enough content
-                text = (
-                    f"Document Summary: {file.filename}\n\n"
-                    "This document contains comprehensive educational materials, syllabus guidelines, "
-                    "research summaries, and lecture notes. Key topics cover introduction to scientific theories, "
-                    "methodologies, experiment designs, quantitative analysis, and final evaluations. "
-                    "Section 1: General Background and foundational theories.\n"
-                    "Section 2: Practical implementation, formulas, and diagrams.\n"
-                    "Section 3: Conclusion, future directions, and practice worksheets."
-                )
+        text = extract_text_from_file(file.filename, contents)
         
         pdf_id = str(uuid.uuid4())
         num_pages = store_pdf_content(pdf_id, text)
@@ -68,9 +36,6 @@ async def upload_pdf(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to process file: {str(e)}"
         )
-
-# Import re for regex match inside upload route
-import re
 
 @router.post("/query", response_model=PDFChatResponse)
 def query_uploaded_pdf(

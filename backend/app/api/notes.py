@@ -5,7 +5,7 @@ from app.core.database import get_db
 from app.core.security import get_current_user_id
 from app.models.note import Note
 from app.schemas.schemas import NoteCreateRequest, NoteResponse
-from app.services.llm import call_llm
+from app.services.note_summarizer import generate_notes_summary
 
 router = APIRouter()
 
@@ -15,19 +15,11 @@ def generate_study_notes(
     db: Session = Depends(get_db),
     current_user_id: int = Depends(get_current_user_id)
 ):
-    system_prompt = (
-        "You are an expert AI Study Assistant. Summarize and format the provided student notes or textbooks. "
-        "Use Markdown with headers, bullet points, checklists, and highlighted quotes. "
-        "Organize the content logically so it is easy to review."
+    summary = generate_notes_summary(
+        title=request.title,
+        subject=request.subject,
+        original_text=request.original_text
     )
-
-    prompt = (
-        f"Subject: {request.subject}\n"
-        f"Notes Title: {request.title}\n\n"
-        f"Content to Summarize:\n{request.original_text}"
-    )
-
-    summary = call_llm(prompt, system_prompt)
 
     db_note = Note(
         title=request.title,
