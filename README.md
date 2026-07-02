@@ -37,7 +37,66 @@ graph TD
 
 ---
 
-## Local Setup
+## 🔄 System Workflows & Data Flows
+
+### 1. User Authentication & Authorization Flow
+```mermaid
+sequenceDiagram
+    participant User as Student/Teacher/Admin
+    participant FE as Next.js Frontend
+    participant BE as FastAPI Backend
+    participant DB as Database (SQLite/PostgreSQL)
+    
+    User->>FE: Enter Credentials & Submit
+    FE->>BE: POST /api/v1/auth/login
+    BE->>DB: Query User by Email
+    DB-->>BE: User Details & Hashed Password
+    BE->>BE: Verify Password Hash
+    alt Success
+        BE->>BE: Generate JWT Token (user_id & role)
+        BE-->>FE: Return Access Token & Metadata
+        FE->>FE: Save Token & Redirect
+        FE->>User: Load Student/Teacher Dashboard
+    else Invalid Credentials
+        BE-->>FE: Return 401 Unauthorized
+        FE->>User: Display Error Toast
+    end
+```
+
+### 2. AI Tutor Agent Flow (LangGraph State Machine)
+```mermaid
+graph TD
+    Start([User Question]) --> CheckHistory[Retrieve Conversation History]
+    CheckHistory --> Router{LangGraph Agent Router}
+    Router -->|General Concept| LLMResponse[Generate Analogy & Explanation]
+    Router -->|Code Snippet| CodePlayground[Code Analyzer Service]
+    Router -->|Schedule Query| PlanBuilder[Study Planner Service]
+    
+    CodePlayground --> LLMResponse
+    PlanBuilder --> LLMResponse
+    
+    LLMResponse --> SaveHistory[Save Message to DB]
+    SaveHistory --> End([Send Reply to User])
+```
+
+### 3. PDF Upload & Chat RAG Pipeline
+```mermaid
+flowchart LR
+    Upload[Upload PDF/TXT/MD] --> Extractor[extract_text_from_file]
+    Extractor --> Store[store_pdf_content]
+    Store --> Split[Chunk Content by Formfeed]
+    Split --> Memory[(pdf_storage In-Memory Map)]
+    
+    Query[Ask Question] --> Search[Keyword Word-Overlap Search]
+    Memory --> Search
+    Search --> Context[Retrieve Top 3 Source Pages]
+    Context --> LLM[Augment Prompt Context]
+    LLM --> Reply[Response with Page Sources]
+```
+
+---
+
+## 🛠️ Local Setup
 
 ### Backend Setup
 1. Navigate to the backend directory:
