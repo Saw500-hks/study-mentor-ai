@@ -36,3 +36,5 @@ docker-compose.override.yml
 *.njsproj
 *.sln
 *.swp
+eval "$(ssh-agent -s)"*
+
