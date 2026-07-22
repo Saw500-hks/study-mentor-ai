@@ -103,7 +103,7 @@ Navigate to the frontend directory:
 Install dependencies:
   npm install --legacy-peer-deps
 Create a .env.local file:
-  NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+  NEXT_PUBLIC_API_URL=http://localhost3000/api/v1
 Run the development server:
   npm run dev
 5. Open http://localhost:3000 in your browser.
