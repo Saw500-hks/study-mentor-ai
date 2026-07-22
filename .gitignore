@@ -1,40 +1,41 @@
-# Node.js
-node_modules/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-.next/
-out/
-build/
-dist/
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-.venv/
-venv/
-ENV/
-env/
-.env
-.env*.local
+# env files (can opt-in for committing if needed)
+.env*
 
-# Database / Docker
-*.db
-*.sqlite3
-.data/
-pgdata/
-docker-compose.override.yml
+# vercel
+.vercel
 
-# OS / IDE
-.DS_Store
-.vscode/
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.swp
-eval "$(ssh-agent -s)"*
-
+# typescript
+*.tsbuildinfo
+next-env.d.ts
