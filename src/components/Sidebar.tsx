@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { 
   Bot, 
   BrainCircuit, 
@@ -9,7 +10,8 @@ import {
   Code2, 
   BarChart3, 
   UserCheck, 
-  Sparkles 
+  Sparkles, 
+  LayoutDashboard 
 } from "lucide-react";
 
 export type TabType = "tutor" | "quiz" | "planner" | "doc-chat" | "playground" | "analytics";
@@ -47,6 +49,15 @@ export default function Sidebar({ activeTab, setActiveTab, userRole, setUserRole
             <div className="text-xs text-indigo-400 font-medium">AI Classroom System</div>
           </div>
         </div>
+
+        {/* Dashboard Link */}
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-slate-200 bg-slate-800/80 hover:bg-slate-800 transition-all border border-slate-700/80"
+        >
+          <LayoutDashboard className="w-5 h-5 text-indigo-400" />
+          <span>Overview Dashboard</span>
+        </Link>
 
         {/* Role Selector */}
         <div className="bg-slate-950 p-2 rounded-xl border border-slate-800/80">
